@@ -156,6 +156,9 @@ Everything a backend would do here is a public API call. Keeping it in the brows
 npm test
 ```
 
+<p align="center"><img src="docs/tests.svg" alt="Animated terminal: npm test runs 15 node:test tests, all passing" width="820"></p>
+<p align="center"><sub>Recorded with <a href="https://github.com/BlazeXYZ/termreel">termreel</a> from <a href="docs/tests.reel"><code>docs/tests.reel</code></a>.</sub></p>
+
 15 tests on `node:test`, with no dependencies. They cover PEP 440 ordering and specifiers, marker evaluation, every manifest format, lockfile path resolution (including v1 conversion), blast-radius metrics on a hand-built graph, the CVSS calculator against NVD reference scores, advisory fix-version selection and repository-URL normalization.
 
 ## Limitations and roadmap

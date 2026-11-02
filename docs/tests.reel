@@ -1,0 +1,9 @@
+# README demo of the test suite. Render from the repo root:
+#   termreel render docs/tests.reel -o docs/tests.svg
+@cwd ..
+@size 92x26
+@title blast-radius · npm test
+@prompt [bold #db94ed]~/blast-radius[/] [#ee15ee]❯[/]
+@typing 20
+$ npm test --silent
+@sleep 3
