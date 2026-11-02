@@ -40,22 +40,8 @@ window.blastRadius = { state, graphView }; // handy for poking at results from d
 
 /* ---------- Theme ---------- */
 
-function applyTheme(theme) {
-  if (theme) document.documentElement.dataset.theme = theme;
-  else delete document.documentElement.dataset.theme;
-  graphView.refreshColors();
-}
-try {
-  applyTheme(localStorage.getItem('blast-radius-theme'));
-} catch {
-  // Storage can be unavailable (private mode); the system theme still applies.
-}
-$('#theme-toggle').addEventListener('click', () => {
-  const current = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  const next = current === 'dark' ? 'light' : 'dark';
-  applyTheme(next);
-  try { localStorage.setItem('blast-radius-theme', next); } catch { /* see above */ }
-});
+// The graph draws its labels on a canvas, so it re-reads the font once the web fonts have loaded.
+document.fonts?.ready.then(() => graphView.refreshColors());
 
 /* ---------- Input ---------- */
 

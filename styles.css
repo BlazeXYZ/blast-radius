@@ -1,77 +1,33 @@
 :root {
-  color-scheme: light;
-  --bg: #f5f6f8;
-  --panel: #ffffff;
-  --panel-2: #f0f2f5;
-  --border: #dde1e7;
-  --text: #17202b;
-  --muted: #637081;
-  --accent: #e8551f;
-  --accent-ink: #ffffff;
-  --ring: #c9cfd8;
-  --edge: #9aa5b3;
-  --risk-none: #8fa3b8;
-  --risk-low: #c9a915;
-  --risk-medium: #e88a1a;
-  --risk-high: #e04b2b;
-  --risk-critical: #b8155f;
-  --ok: #1f8a54;
-  --shadow: 0 1px 2px rgb(20 30 45 / 0.06), 0 4px 16px rgb(20 30 45 / 0.05);
-  --radius: 10px;
-  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: #0b0f14;
-    --panel: #11161d;
-    --panel-2: #171e27;
-    --border: #252e3a;
-    --text: #e4e9f0;
-    --muted: #8794a5;
-    --accent: #ff6b35;
-    --accent-ink: #1a0b04;
-    --ring: #232c38;
-    --edge: #3c4859;
-    --risk-none: #4f6a85;
-    --risk-low: #d9c13f;
-    --risk-medium: #f59a35;
-    --risk-high: #f25a3c;
-    --risk-critical: #ff2e7e;
-    --ok: #3ccf8e;
-    --shadow: none;
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #0b0f14;
-  --panel: #11161d;
-  --panel-2: #171e27;
-  --border: #252e3a;
-  --text: #e4e9f0;
-  --muted: #8794a5;
-  --accent: #ff6b35;
-  --accent-ink: #1a0b04;
-  --ring: #232c38;
-  --edge: #3c4859;
-  --risk-none: #4f6a85;
+  /* Mapped onto the shared BZ theme (bz-theme.css), so the app matches blazexyz.com. Dark only, like the main site. */
+  --bg: var(--bz-bg);
+  --panel: var(--bz-surface);
+  --panel-2: var(--bz-surface-2);
+  --border: var(--bz-line);
+  --text: var(--bz-text-hi);
+  --muted: var(--bz-text-mid);
+  --accent: var(--bz-accent);
+  --accent-ink: var(--bz-bg);
+  --ring: rgba(255, 255, 255, 0.09);
+  --edge: rgba(var(--bz-glow-rgb), 0.24);
+  --risk-none: #6e5f86;
   --risk-low: #d9c13f;
   --risk-medium: #f59a35;
   --risk-high: #f25a3c;
   --risk-critical: #ff2e7e;
   --ok: #3ccf8e;
-  --shadow: none;
+  --shadow: var(--bz-glass-shadow);
+  --radius: var(--bz-radius);
+  --font: var(--bz-mono);
+  --mono: var(--bz-mono);
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
-  background: var(--bg);
+  background: transparent;
   color: var(--text);
-  font: 14px/1.5 var(--font);
+  font: 13px/1.6 var(--font);
   min-height: 100vh;
 }
 h1, h2, h3 { margin: 0; line-height: 1.25; }
@@ -430,6 +386,73 @@ td.issues { max-width: 320px; }
 .top-list li > div { display: flex; flex-direction: column; min-width: 0; }
 .top-list small { color: var(--muted); font-size: 12px; }
 .top-list .ver { margin-left: 0; }
+
+/* ---------- BZ theme: glass surfaces and type, as on blazexyz.com ---------- */
+
+.panel, .empty, .stat, #view-graph, .dcard, .table-wrap {
+  background: var(--bz-glass-bg);
+  border: 1px solid var(--bz-glass-border);
+}
+.stat, .dcard { border-radius: var(--bz-radius-sm); }
+.dcard { border-left: 3px solid var(--band); }
+.vuln-list li, .scripts, .graph-tooltip { border-radius: var(--bz-radius-sm); }
+.graph-tooltip { background: rgba(14, 9, 20, 0.88); backdrop-filter: var(--bz-glass-blur); -webkit-backdrop-filter: var(--bz-glass-blur); }
+.legend { background: rgba(14, 9, 20, 0.7); }
+th { background: var(--bz-surface-2); }
+tbody tr:hover { background: rgba(255, 255, 255, 0.04); }
+input, select, textarea { background: rgba(0, 0, 0, 0.28); border-radius: var(--bz-radius-sm); }
+input:focus, select:focus, textarea:focus { border-color: rgba(var(--bz-glow-rgb), 0.5); outline: none; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 1px solid rgb(var(--bz-glow-rgb)); outline-offset: 1px; }
+
+.topbar {
+  background: rgba(10, 7, 13, 0.62);
+  backdrop-filter: var(--bz-glass-blur);
+  -webkit-backdrop-filter: var(--bz-glass-blur);
+  border-bottom-color: var(--bz-line);
+  padding-left: 28px;
+  padding-right: 28px;
+}
+.brand h1 { font-size: 0.8rem; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; }
+.brand p { color: var(--bz-text-lo); font-size: 11px; letter-spacing: 0.02em; }
+.brand circle { stroke: var(--bz-accent); }
+.brand .r1 { fill: var(--bz-accent); }
+.topbar-actions .bz-home { margin-right: 10px; }
+
+/* Buttons: quiet glass chips; the primary one is the main site's active tab. */
+button { background: rgba(255, 255, 255, 0.04); border-radius: var(--bz-radius-sm); transition: border-color 0.2s, background 0.2s, color 0.2s; }
+button:hover:not(:disabled) { border-color: rgba(var(--bz-glow-rgb), 0.45); }
+button.primary {
+  background: var(--bz-active-bg);
+  border-color: rgba(var(--bz-glow-rgb), 0.38);
+  color: var(--bz-text-hi);
+  box-shadow: var(--bz-active-shadow);
+  font-weight: 400;
+}
+button.primary:hover:not(:disabled) { filter: none; background: rgba(var(--bz-glow-rgb), 0.24); border-color: rgba(var(--bz-glow-rgb), 0.6); }
+.topbar button, button.primary, button.big, .tabs button {
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+button.big { font-size: 12px; padding: 12px; }
+button.ghost { background: transparent; }
+button.link { color: var(--bz-accent); text-decoration-color: rgba(var(--bz-glow-rgb), 0.45); }
+.file-btn { background: rgba(255, 255, 255, 0.04); border-radius: var(--bz-radius-sm); }
+.chip { background: rgba(255, 255, 255, 0.04); }
+.chip.active { background: var(--bz-active-bg); border-color: rgba(var(--bz-glow-rgb), 0.38); color: var(--bz-text-hi); box-shadow: var(--bz-active-shadow); }
+.tabs button[aria-selected="true"] { color: var(--bz-text-hi); }
+.step { background: var(--bz-active-bg); border-color: rgba(var(--bz-glow-rgb), 0.38); }
+
+/* Labels: small uppercase mono in the accent, as in the bio islands. */
+.input-panel h2, .details h3 { font-size: 0.62rem; font-weight: 400; letter-spacing: 0.2em; color: rgba(var(--bz-glow-rgb), 0.9); }
+.stat-label, .dstats dt, .inherited span, .facts dt, .risk-big span { letter-spacing: 0.1em; text-transform: uppercase; font-size: 10px; color: var(--bz-text-lo); }
+.stat-value, .inherited b, .risk-big b { font-weight: 500; }
+
+/* Display type: a light sans sentence with one word in script. */
+.empty h2, .project-head h2, .dhead h2 { font-family: var(--bz-sans); font-weight: 300; letter-spacing: 0.01em; }
+.empty h2 { font-size: 28px; line-height: 1.35; }
+.empty p, .features li { font-size: 12.5px; line-height: 1.75; }
+.features b { font-weight: 500; }
+.features li::before { background: var(--bz-accent); box-shadow: 0 0 10px rgba(var(--bz-glow-rgb), 0.7); }
+.hero-rings i { box-shadow: 0 0 0 6px rgba(var(--bz-glow-rgb), 0.18), 0 0 24px rgba(var(--bz-glow-rgb), 0.6); }
 
 /* ---------- Responsive ---------- */
 

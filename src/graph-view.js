@@ -64,7 +64,6 @@ export class GraphView {
       .on('mouseleave', () => { this.hovered = null; this.tooltip.hidden = true; this.draw(); });
 
     new ResizeObserver(() => this.resize()).observe(container);
-    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.refreshColors());
     this.refreshColors();
   }
 
