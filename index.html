@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blast Radius</title>
+  <meta name="description" content="Map your full dependency tree and find the packages that put your project at risk: known CVEs, deprecated and abandoned packages, install scripts and single-maintainer bottlenecks.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='none' stroke='%23ff6b35' stroke-width='2.5' stroke-dasharray='4 3'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23ff6b35' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%23ff6b35'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "d3": "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm",
+        "semver": "https://cdn.jsdelivr.net/npm/semver@7.6.3/+esm"
+      }
+    }
+  </script>
+  <script type="module" src="src/main.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" class="r3"/><circle cx="16" cy="16" r="8" class="r2"/><circle cx="16" cy="16" r="3.5" class="r1"/></svg>
+      <div>
+        <h1>Blast Radius</h1>
+        <p>See everything your dependencies drag in</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button id="toggle-input" class="ghost only-results" type="button">Edit input</button>
+      <button id="export-md" type="button" disabled>Export report</button>
+      <button id="export-json" class="ghost" type="button" disabled>JSON</button>
+      <button id="theme-toggle" class="ghost icon" type="button" aria-label="Toggle light or dark theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9A7 7 0 0 1 12 3z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel input-panel" id="input-panel">
+      <section>
+        <h2><span class="step">1</span> Load a project</h2>
+        <form id="gh-form" class="field">
+          <label for="gh-input">GitHub repository</label>
+          <div class="row">
+            <input id="gh-input" placeholder="owner/repo or github.com URL" autocomplete="off" spellcheck="false">
+            <button type="submit">Fetch</button>
+          </div>
+        </form>
+        <div class="chips">
+          <button class="chip" type="button" data-gh="expressjs/express">expressjs/express</button>
+          <button class="chip" type="button" data-gh="pallets/flask">pallets/flask</button>
+          <button class="chip" type="button" data-gh="axios/axios">axios/axios</button>
+        </div>
+        <div class="divider"><span>or paste / drop a manifest</span></div>
+        <textarea id="manifest" spellcheck="false" aria-label="Manifest contents" placeholder='package.json, package-lock.json, requirements.txt or pyproject.toml
+
+{
+  "dependencies": {
+    "express": "^4.18.0"
+  }
+}'></textarea>
+        <div class="row wrap small">
+          <label class="file-btn">Upload file<input type="file" id="file-input" accept=".json,.txt,.toml,.in"></label>
+          <span class="muted">Try:</span>
+          <button class="link" type="button" data-example="npm">legacy Node app</button>
+          <button class="link" type="button" data-example="pypi">legacy Python app</button>
+        </div>
+      </section>
+
+      <section>
+        <h2><span class="step">2</span> Options</h2>
+        <label class="check"><input type="checkbox" id="opt-dev"> Include devDependencies</label>
+        <label class="field inline">Max packages
+          <select id="opt-max">
+            <option value="500">500</option>
+            <option value="1500" selected>1,500</option>
+            <option value="3000">3,000</option>
+          </select>
+        </label>
+      </section>
+
+      <button id="analyze" class="primary big" type="button">Analyze dependencies</button>
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <ul id="log" class="log"></ul>
+      <p class="fine">Runs entirely in your browser. The only requests go to public APIs: the npm registry, PyPI, OSV.dev and GitHub.</p>
+    </aside>
+
+    <section class="workspace">
+      <div id="empty" class="empty">
+        <div class="hero-rings" aria-hidden="true"><span></span><span></span><span></span><i></i></div>
+        <h2>Every dependency is a dependency on someone else's dependencies.</h2>
+        <p>A typical app lists a dozen packages and installs hundreds. Blast Radius resolves your full tree, then shows which packages are dangerous, how deep they're buried, and which of <em>your</em> choices pulled them in.</p>
+        <ul class="features">
+          <li><b>Known CVEs</b> from OSV.dev, with the version that fixes each one</li>
+          <li><b>Supply-chain signals</b>: install scripts, single maintainers, abandoned and deprecated packages</li>
+          <li><b>Blast radius</b>: what each direct dependency costs you, and what disappears if you drop it</li>
+        </ul>
+        <div class="row center">
+          <button class="primary" type="button" data-example="npm">Analyze a legacy Node app</button>
+          <button type="button" data-example="pypi">or a Python one</button>
+        </div>
+      </div>
+
+      <div id="results" hidden>
+        <div class="project-head">
+          <div>
+            <h2 id="project-title"></h2>
+            <span id="project-source" class="muted"></span>
+          </div>
+        </div>
+        <div id="summary" class="summary"></div>
+        <ul id="warnings" class="warnings" hidden></ul>
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" data-view="graph" aria-selected="true">Radar</button>
+          <button type="button" role="tab" data-view="direct" aria-selected="false">Direct deps</button>
+          <button type="button" role="tab" data-view="table" aria-selected="false">All packages</button>
+        </div>
+
+        <div class="view" id="view-graph">
+          <div id="graph" class="graph"></div>
+          <div class="legend" aria-hidden="true">
+            <span><i class="dot band-none"></i>clean</span>
+            <span><i class="dot band-low"></i>low</span>
+            <span><i class="dot band-medium"></i>medium</span>
+            <span><i class="dot band-high"></i>high</span>
+            <span><i class="dot band-critical"></i>critical</span>
+            <span class="sep">Size = packages it brings in · Ring = depth · Outline = direct</span>
+          </div>
+          <div class="graph-controls">
+            <button id="fit" class="ghost small" type="button">Fit</button>
+          </div>
+        </div>
+
+        <div class="view" id="view-direct" hidden>
+          <p class="view-intro">Your direct dependencies, ranked by <b>inherited risk</b>: the combined risk of everything each one installs. <b>Gone if dropped</b> counts the packages that would leave your tree if you removed it (darker part of the bar).</p>
+          <div id="direct-list" class="direct-grid"></div>
+        </div>
+
+        <div class="view" id="view-table" hidden>
+          <div class="table-tools">
+            <input id="search" type="search" placeholder="Filter by name…" aria-label="Filter packages by name">
+            <div id="filters" class="chips"></div>
+            <span id="table-count" class="muted small"></span>
+          </div>
+          <div class="table-wrap"><table id="pkg-table"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel details" id="details" aria-live="polite">
+      <div class="details-empty">
+        <p>Select a package to see why it's installed, what's wrong with it, and how far the damage would spread.</p>
+      </div>
+    </aside>
+  </main>
+</body>
+</html>

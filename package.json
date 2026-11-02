@@ -1,0 +1,12 @@
+{
+  "name": "blast-radius",
+  "version": "1.0.0",
+  "description": "Map a project's full dependency tree and find the packages that put it at risk.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes http-server@14.1.1 -p 8080 -c-1 .",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "license": "MIT"
+}
